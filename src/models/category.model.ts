@@ -9,6 +9,10 @@ export const categorySchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    restaurant_id: {
+        type: mongoose.Types.ObjectId,
+        require: true
+    }
 }, {
     timestamps: true
 })

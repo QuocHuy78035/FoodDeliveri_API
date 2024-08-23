@@ -9,9 +9,7 @@ export class RestaurantController {
 
     static async createRestaurant(req: Request, res: Response, next: NextFunction) {
         const restaurant = req.body;
-
         try {
-
             //crete user type vendor
             const passwordHash = await Utils.hashPassword(restaurant.password);
             const verifycationToken = Utils.generateVerificationToken(5);
@@ -49,6 +47,7 @@ export class RestaurantController {
                 restaurantData = { ...restaurantData, cover: path }
             }
             const restaurantDoc = await new restaurantModel(restaurantData).save();
+            console.log('123', restaurantDoc._id);
 
             //create category
             const categoriesData = JSON.parse(restaurant.categories).map(x => {
@@ -67,14 +66,69 @@ export class RestaurantController {
         }
     }
 
-    static async getAllCity(req: Request, res: Response, next: NextFunction) {
-        // const cities = await cityModel.find({
-        //     status: 'active'
-        // });
-        // return res.status(200).json({
-        //     message: 'Get all city successfully!',
-        //     status_code: 200,
-        //     cities
-        // })
+    static async getNearByRestaurant(req: Request, res: Response, next: NextFunction) {
+        const EARTH_RADIUS_IN_KM = 6378.1;
+        const lng = req.query.lng as string;
+        const lat = req.query.lat as string;
+        const radius = req.query.radius as string;
+        try {
+            const restaurant = await restaurantModel.find({
+                status: 'active',
+                location: {
+                    $geoWithin: {
+                        $centerSphere: [
+                            [parseFloat(lng), parseFloat(lat)],
+                            parseFloat(radius) / EARTH_RADIUS_IN_KM
+                        ]
+                    }
+                }
+            }, {
+                __v: 0
+            })
+            return res.status(200).json({
+                status_code: 200,
+                message: "Get restaurant successfully!",
+                restaurant
+            })
+        }
+        catch (e) {
+            console.log(e)
+            return next(e);
+        }
+    }
+
+    static async getRestaurantBySearch(req: Request, res: Response, next: NextFunction) {
+        const EARTH_RADIUS_IN_KM = 6378.1;
+        const lng = req.query.lng as string;
+        const lat = req.query.lat as string;
+        const radius = req.query.radius as string;
+        const name = req.query.name as string;
+        console.log(name);
+        try {
+            const restaurant = await restaurantModel.find({
+                status: 'active',
+                // i: khong phan biet chu hoa va chu thuong
+                name: { $regex: name, $options: 'i' },
+                // location: {
+                //     $geoWithin: {
+                //         $centerSphere: [
+                //             [parseFloat(lng), parseFloat(lat)],
+                //             parseFloat(radius) / EARTH_RADIUS_IN_KM
+                //         ]
+                //     }
+                // },
+            }, {
+                __v: 0
+            })
+            return res.status(200).json({
+                status_code: 200,
+                message: "Get restaurant successfully!",
+                restaurant
+            })
+        }
+        catch (e) {
+            console.log(e)
+            return next(e);
+        }
     }
 }

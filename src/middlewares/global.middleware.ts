@@ -5,7 +5,6 @@ import { JwtToken } from "../utils/jwt";
 export class GlobalMiddleware {
     static handleValidationError(req: Request, res: Response, next: NextFunction) {
         const errors = validationResult(req);
-        console.log(errors);
         if (!errors.isEmpty()) {
             // return res.status(422).json({
             //     error: error.array().map(e => e.msg)

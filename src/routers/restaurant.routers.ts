@@ -25,7 +25,16 @@ class RestaurantRouter {
             RestaurantController.createRestaurant)
     };
     getRouter() {
-
+        this.router.get('/getNearByRestaurant',
+            GlobalMiddleware.auth,
+            RestaurantValidation.getNearByRestaurant(),
+            GlobalMiddleware.handleValidationError,
+            RestaurantController.getNearByRestaurant)
+        this.router.get('/getRestaurantBySearch',
+            GlobalMiddleware.auth,
+            RestaurantValidation.getRestaurantBySearch(),
+            GlobalMiddleware.handleValidationError,
+            RestaurantController.getRestaurantBySearch)
     };
     patchRouter() {
 

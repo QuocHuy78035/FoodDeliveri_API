@@ -27,4 +27,19 @@ export class RestaurantValidation {
                 })
         ]
     }
+
+
+    static getNearByRestaurant() {
+        return [
+            body('lng', 'Longtitude is required').notEmpty(),
+            body('lat', 'Latitude is required').notEmpty(),
+            body('radius', 'Radius is required').notEmpty()
+        ];
+    }
+
+    static getRestaurantBySearch() {
+        return [
+            body('name', 'Restaurant name is required').notEmpty()
+        ];
+    }
 }
